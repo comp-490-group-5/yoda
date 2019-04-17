@@ -99,3 +99,51 @@ def suggest_restaurant():
         click.echo()
         click.echo(restaurant['name'] + ' on ' + restaurant['location']['address1'])
         click.echo('Book a table at ' + restaurant['phone'])
+
+
+@food.command()
+def suggest_recipe():
+    """
+    Get a suggested restaurant in your city.
+    """
+
+    suggestRecipe = "https://www.themealdb.com/api/json/v1/1/random.php"
+    recipekURL = "https://www.themealdb.com/api/json/v1/1/search.php?s="
+    recipeIngredients = []
+    def getRecipeSuggestion():
+        request = requests.get(suggestRecipe)
+        parsed_response = request.json()
+        recipeInfoJSON = parsed_response['meals']
+        recipeStr = recipeInfoJSON[0]['strMeal']
+
+        click.echo("In need of cooking instructions you are.  Hmmmmmm.")
+        click.echo("---------------------" + recipeStr + "---------------------")
+        getIngredients(recipeStr)
+        getRecipeInstructions(recipeStr)
+
+    def getIngredients(recipeStr):
+        request = requests.get(recipekURL+recipeStr)
+        parsed_response = request.json()
+        recipeInfoJSON = parsed_response['meals']
+        recipeInstructions = recipeInfoJSON[0]["strInstructions"]
+        click.echo("Instructions: " + recipeInstructions)
+    def getRecipeInstructions(recipeStr):
+        request = requests.get(recipekURL + recipeStr)
+        parsed_response = request.json()
+        recipeInfoJSON = parsed_response['meals']
+        click.echo("Ingredients: ")
+        for ingNumber in range(1, 16):
+            ingredient = recipeInfoJSON[0]["strIngredient" + str(ingNumber)]
+            qty = recipeInfoJSON[0]["strMeasure" + str(ingNumber)]
+            if ingredient:
+                if not qty:
+                    output_str = "{} (as needed)".format(ingredient)
+                else:
+                    #
+                    output_str = ingredient + ' ' + qty
+
+                click.echo(output_str)
+                recipeInfoJSON.append(ingredient)
+
+    getRecipeSuggestion()
+
