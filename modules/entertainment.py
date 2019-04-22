@@ -25,17 +25,23 @@ def lyrics():
     title = input()
 
     lyrics_request = requests.get("https://api.lyrics.ovh/v1/" + artist + "/" + title)
-    lyrics_data = lyrics_request.json()
 
-    if "lyrics" in lyrics_data.keys():
-        click.echo(chalk.green("--------Lyrics--------"))
-        click.echo(lyrics_data["lyrics"])
-    elif "error" in lyrics_data.keys():
-        click.echo(chalk.yellow(lyrics_data["error"]))
-    else:  # if there is no lyrics or error in API response.
+    if lyrics_request.status_code == 200:
+        lyrics_data = lyrics_request.json()
+
+        if "lyrics" in lyrics_data.keys():
+            click.echo(chalk.green("--------Lyrics--------"))
+            click.echo(lyrics_data["lyrics"])
+        elif "error" in lyrics_data.keys():
+            click.echo(chalk.yellow(lyrics_data["error"]))
+        else:  # if there is no lyrics or error in API response.
+            click.echo(
+                chalk.red("Something wrong with the request. Please raise an issue.")
+            )
+    else:
         click.echo(
-            chalk.red("Something wrong with the request. Please raise an issue.")
-        )
+                chalk.red("Something wrong with the request. Please raise an issue.")
+            )
 
 
 # ----------------------- / lyrics code -----------------------#
