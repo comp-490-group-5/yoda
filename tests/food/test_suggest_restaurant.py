@@ -22,3 +22,7 @@ class TestSuggestRestaurant(unittest.TestCase):
         result = self.runner.invoke(yoda.cli, ['food', 'suggest_restaurant'], input='Berlin\nJamaican')
         self.assertIn("Why don't you try THIS restaurant tonight!", result.output)
         self.assertIsNone(result.exception)
+
+        result = self.runner.invoke(yoda.cli, ['food', 'suggest_restaurant'], input='adsjkhfbajsdhfasdf\nasdasdasd')
+        self.assertIn("Could not process your request.", result.output)
+        self.assertIsNon(result.exception)
