@@ -88,18 +88,20 @@ def suggest_restaurant():
         'limit': 50
     }
     req = requests.get(yelp_url, headers={'Authorization': 'Bearer ' + API_KEY}, params=url_params)
-    parsed_response = req.json()
-    businesses = parsed_response['businesses']
-    if len(businesses) == 0:
-        click.echo('Could not find any restaurants like that in your city :(')
+    if req.status_code == 200:
+        parsed_response = req.json()
+        businesses = parsed_response['businesses']
+        if len(businesses) == 0:
+            click.echo('Could not find any restaurants like that in your city :(')
+        else:
+            restaurant = random.choice(businesses)
+            click.echo()
+            click.echo("Why don't you try THIS restaurant tonight!")
+            click.echo()
+            click.echo(restaurant['name'] + ' on ' + restaurant['location']['address1'])
+            click.echo('Book a table at ' + restaurant['phone'])
     else:
-        restaurant = random.choice(businesses)
-        click.echo()
-        click.echo("Why don't you try THIS restaurant tonight!")
-        click.echo()
-        click.echo(restaurant['name'] + ' on ' + restaurant['location']['address1'])
-        click.echo('Book a table at ' + restaurant['phone'])
-
+        click.echo('Could not process your request.')
 
 @food.command()
 def suggest_recipe():
