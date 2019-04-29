@@ -90,6 +90,8 @@ def setup():
 
     input_data(setup_data, MONEY_CONFIG_FILE_PATH)
 
+def get_result_parameters(result, parameter="any"):
+    return result['result']['parameters'][parameter]
 
 def expense():
     """
@@ -102,11 +104,11 @@ def expense():
         response = request.getresponse().read()
         output = json.loads(response.decode('utf8').replace('\n', ''))
         # click.echo(output)
-        currency_name = output["result"]["parameters"]["currency-name"]
+        currency_name = get_result_parameters(output, 'currency-name')
         item = (
-            output["result"]["parameters"]["any"]
-            if len(output["result"]["parameters"]["any"].split()) == 1
-            else ('"' + output["result"]["parameters"]["any"] + '"')
+            get_result_parameters(output)
+            if len(get_result_parameters(output).split()) == 1
+            else ('"' + get_result_parameters(output) + '"')
         )
         number = output["result"]["parameters"]["number"]
 
