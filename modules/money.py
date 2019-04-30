@@ -164,14 +164,12 @@ def expenses_month():
         import calendar
 
         if len(tmp_dict) != 0:
-            for k in tmp_dict:
-                click.echo(
-                    calendar.month_abbr[k]
-                    + ": spent "
-                    + str(tmp_dict[k])
-                    + " "
-                    + default_cur
-                )
+            # JF
+            exp_table = PrettyTable()
+            exp_table.field_names = ["Month", "Expenses(" + default_cur + ")"]
+            for k, v in tmp_dict.iteritems():
+                exp_table.add_row([calendar.month_abbr[k], v])
+            print(exp_table)
 
 
 def convertCurrency():
