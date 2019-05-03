@@ -21,52 +21,21 @@ def food():
     Suggest recipes for food, drinks, and restaurants
     """
 
+@food.command()
+def suggest_recipes():
+    """
+    Get a suggested recipe.
+    """
+
+    suggester("https://www.themealdb.com/api/json/v1/1/random.php", "https://www.themealdb.com/api/json/v1/1/search.php?s=", 'In need of a recipe you look. Hmmmmmmmm.', 'meals', "strMeal")
 
 @food.command()
 def suggest_drinks():
     """
     Get suggested a random drink recipe from the Cocktail DB API.
     """
-    drinkURL = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s="
-    randomDrinkURL = "https://www.thecocktaildb.com/api/json/v1/1/random.php"
-    drinkIngredients = []
+    suggester("https://www.thecocktaildb.com/api/json/v1/1/random.php", "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=", "Like you need a drink you look.  Hmmmmmm.", "drinks", "strDrink")
 
-    def getDrinkSuggestion():
-        req = requests.get(randomDrinkURL)
-        parsed_response = req.json()
-        drinkInfoJSON = parsed_response["drinks"]
-        drink = drinkInfoJSON[0]["strDrink"]
-
-        click.echo("Like you need a drink you look.  Hmmmmmm.")
-        click.echo("---------------------" + drink + "---------------------")
-        getIngredients(drink)
-        getDrinkInstructions(drink)
-
-    def getDrinkInstructions(drink):
-        req = requests.get(drinkURL + drink)
-        parsed_response = req.json()
-        drinkInfoJSON = parsed_response["drinks"]
-        drinkInstructions = drinkInfoJSON[0]["strInstructions"]
-        click.echo("Instructions: " + drinkInstructions)
-
-    def getIngredients(drink):
-        req = requests.get(drinkURL + drink)
-        parsed_response = req.json()
-        drinkInfoJSON = parsed_response["drinks"]
-        click.echo("Ingredients: ")
-        for ingNumber in range(1, 16):
-            ingredient = drinkInfoJSON[0]["strIngredient" + str(ingNumber)]
-            qty = drinkInfoJSON[0]["strMeasure" + str(ingNumber)]
-            if ingredient:
-                if not qty:
-                    output_str = "{} (as needed)".format(ingredient)
-                else:
-                    output_str = "{} x {}".format(ingredient, qty)
-
-                click.echo(output_str)
-                drinkIngredients.append(ingredient)
-
-    getDrinkSuggestion()
 
 
 @food.command()
@@ -103,36 +72,34 @@ def suggest_restaurant():
     else:
         click.echo('Could not process your request.')
 
-@food.command()
-def suggest_recipe():
+
+
+def suggester(suggestRecipe,recipeURL, flavorString, subjectAsString, JSONKey):
     """
     Get a suggested restaurant in your city.
     """
 
-    suggestRecipe = "https://www.themealdb.com/api/json/v1/1/random.php"
-    recipekURL = "https://www.themealdb.com/api/json/v1/1/search.php?s="
-    recipeIngredients = []
     def getRecipeSuggestion():
         request = requests.get(suggestRecipe)
         parsed_response = request.json()
-        recipeInfoJSON = parsed_response['meals']
-        recipeStr = recipeInfoJSON[0]['strMeal']
+        recipeInfoJSON = parsed_response[subjectAsString]
+        recipeStr = recipeInfoJSON[0][JSONKey]
 
-        click.echo("In need of cooking instructions you are.  Hmmmmmm.")
+        click.echo(flavorString)
         click.echo("---------------------" + recipeStr + "---------------------")
         getIngredients(recipeStr)
         getRecipeInstructions(recipeStr)
 
     def getIngredients(recipeStr):
-        request = requests.get(recipekURL+recipeStr)
+        request = requests.get(recipeURL+recipeStr)
         parsed_response = request.json()
-        recipeInfoJSON = parsed_response['meals']
+        recipeInfoJSON = parsed_response[subjectAsString]
         recipeInstructions = recipeInfoJSON[0]["strInstructions"]
         click.echo("Instructions: " + recipeInstructions)
     def getRecipeInstructions(recipeStr):
-        request = requests.get(recipekURL + recipeStr)
+        request = requests.get(recipeURL + recipeStr)
         parsed_response = request.json()
-        recipeInfoJSON = parsed_response['meals']
+        recipeInfoJSON = parsed_response[subjectAsString]
         click.echo("Ingredients: ")
         for ingNumber in range(1, 16):
             ingredient = recipeInfoJSON[0]["strIngredient" + str(ingNumber)]
