@@ -27,14 +27,14 @@ def suggest_recipes():
     Get a suggested recipe.
     """
 
-    suggester("https://www.themealdb.com/api/json/v1/1/random.php", "https://www.themealdb.com/api/json/v1/1/search.php?s=", 'In need of a recipe you look. Hmmmmmmmm.', 'meals', "strMeal")
+    suggester("meals")
 
 @food.command()
 def suggest_drinks():
     """
     Get suggested a random drink recipe from the Cocktail DB API.
     """
-    suggester("https://www.thecocktaildb.com/api/json/v1/1/random.php", "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=", "Like you need a drink you look.  Hmmmmmm.", "drinks", "strDrink")
+    suggester("drinks")
 
 
 
@@ -74,13 +74,31 @@ def suggest_restaurant():
 
 
 
-def suggester(suggestRecipe,recipeURL, flavorString, subjectAsString, JSONKey):
+def suggester(subjectAsString):
     """
     Get a suggested restaurant in your city.
     """
 
+    if type(subjectAsString) != str:
+        raise TypeError("subjectAsString must be of type string")
+
+    if subjectAsString == 'meals':
+        recipeRandomURL = "https://www.themealdb.com/api/json/v1/1/random.php"
+        recipeLookupURL = "https://www.themealdb.com/api/json/v1/1/search.php?s="
+        flavorString = "In need of a recipe you look. Hmmmmmmmm."
+        JSONKey = "strMeal"
+    elif subjectAsString == 'drinks':
+        recipeRandomURL = "https://www.thecocktaildb.com/api/json/v1/1/random.php"
+        recipeLookupURL = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s="
+        flavorString = "Like you need a drink you look.  Hmmmmmm."
+        JSONKey = "strDrink"
+    else:
+        raise ValueError("\'subjectAsString\' needs to be either \'meals\' or \'drinks\'")
+
+
+
     def getRecipeSuggestion():
-        request = requests.get(suggestRecipe)
+        request = requests.get(recipeRandomURL)
         parsed_response = request.json()
         recipeInfoJSON = parsed_response[subjectAsString]
         recipeStr = recipeInfoJSON[0][JSONKey]
@@ -91,13 +109,13 @@ def suggester(suggestRecipe,recipeURL, flavorString, subjectAsString, JSONKey):
         getRecipeInstructions(recipeStr)
 
     def getIngredients(recipeStr):
-        request = requests.get(recipeURL+recipeStr)
+        request = requests.get(recipeLookupURL+recipeStr)
         parsed_response = request.json()
         recipeInfoJSON = parsed_response[subjectAsString]
         recipeInstructions = recipeInfoJSON[0]["strInstructions"]
         click.echo("Instructions: " + recipeInstructions)
     def getRecipeInstructions(recipeStr):
-        request = requests.get(recipeURL + recipeStr)
+        request = requests.get(recipeLookupURL + recipeStr)
         parsed_response = request.json()
         recipeInfoJSON = parsed_response[subjectAsString]
         click.echo("Ingredients: ")
