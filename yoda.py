@@ -146,6 +146,7 @@ def diary(ctx, input):
 
     Commands:\n
     nn: New note\n
+    sn: Search notes\n
     nt: new Task\n
     dt: delete task\n
     notes: view all notes\n

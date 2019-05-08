@@ -70,3 +70,4 @@ class TestDiary(TestCase):
         self.assertEqual(result.exit_code, 0)
         result = self.runner.invoke(yoda.cli, ["diary", "notes"])
         self.assertEqual(result.exit_code, 0)
+

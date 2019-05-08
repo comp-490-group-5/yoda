@@ -165,6 +165,36 @@ def new_task():
         input_data(setup_data, TODAYS_TASKS_ENTRY_FILE_PATH)
 
 
+def search_dict(value, dict):
+    found = False
+    for i in range(0, len(dict)):
+        if value in dict[i]['text']:
+            click.echo(chalk.blue(
+                "found instance of \'" + value + "\' in note titled \'" + dict[i]['title'] + "\' made at " + dict[i][
+                    'time']))
+            click.echo(chalk.blue("    \"" + dict[i]['text'] + "\""))
+            found = True
+    if found == False:
+        click.echo(chalk.blue("no instance of \'" + value + "\' found in in files text"))
+
+
+def search_notes():
+    """
+    search notes
+    """
+    today_entry_check()
+
+    click.echo(chalk.blue("Input a string to search your notes for:"))
+    search_term = input().strip()
+
+    if os.path.isfile(TODAYS_NOTES_ENTRY_FILE_PATH):
+        todays_notes_entry = open(TODAYS_NOTES_ENTRY_FILE_PATH, 'r')
+        all_notes = yaml.load(todays_notes_entry)
+        search_dict(search_term, all_notes['entries'])
+    else:
+        click.echo(chalk.blue("no notes.yaml to search through"))
+
+
 def new_note():
     """
     new note
@@ -353,7 +383,6 @@ def delete_task():
 
 
 def delete_note():
-
     """
 delete a particular note
 	"""
@@ -419,7 +448,7 @@ def notes(today=True):
     """
     see notes for today
     """
-
+    print DIARY_CONFIG_FILE_PATH
     if today == True:
         file_path = TODAYS_NOTES_ENTRY_FILE_PATH
         day_string = "Today"
@@ -457,6 +486,7 @@ def check_sub_command(c):
     sub_commands = {
         "tasks": tasks,
         "nn": new_note,
+        "sn": search_notes,
         "nt": new_task,
         "ct": complete_task,
         "dt": delete_task,
@@ -553,7 +583,7 @@ def list_of_tasks_files():
 				new_note=input()
                 contents['entries'][note_to_be_deleted - 1]['text']=new_note
                 input_data(contents, TODAYS_NOTES_ENTRY_FILE_PATH)
-                
+
 	else:
 		click.echo(chalk.red(
             'There are no tasks. Add a new task by entering "yoda diary nt"'))
@@ -679,7 +709,6 @@ update a particular task
 
 
 def update_note():
-
     """
 	update a particular note
 	"""
